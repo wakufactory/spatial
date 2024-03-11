@@ -7,28 +7,28 @@ export default {
 		],
 		obj_list:[
 			{name:"accessory Clock",id:"clock",
-				path:"./components/clock.js"
+				path:"./apps/clock.js"
 			},
 			{name:"2D image sample",id:"img",
-				path:"./components/image2D.js",
+				path:"./apps/image2D.js",
 				param:{
 					src:"/wxr/assets/img/chihiro015.jpg"
 				}
 			},
 			{name:"2D video sample",id:"video",
-				path:"./components/video2D.js",
+				path:"./apps/video2D.js",
 				param:{
 					src:"/wxr/assets/mov/syaso_sk1.mp4"
 				}
 			},
 			{name:"3D Model sample",id:"model",
-				path:"./components/gltfmodel.js",
+				path:"./apps/gltfmodel.js",
 				param:{
 					src:"./assets/tiger.glb" 
 				}
 			},
 			{name:"Primitive",id:"prim",
-				path:"./components/primitive.js",
+				path:"./apps/primitive.js",
 				ui:[
 					{name:"kind",type:"select",value:"cube",options:[
 						{id:"cube",name:"cube"},

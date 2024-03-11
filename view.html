@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>WebXR Browser UI test</title>
 <script src="/wxr/af/aframe/dist/aframe-master.min.js"></script>
-<script src="/wxr/assets/js/grab2.js?2"></script>
+<script src="components/grab2.js?2"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script type=module>
 const $ = (o)=>document.querySelector(o)
@@ -63,7 +63,7 @@ const app= Vue.createApp({
 						}
 					},
 					components: { ImportObj },
-					template: `<a-box width=0.02 height=0.02 depth=0.02 :color="hcolor" opacity=0.8  grabbable2="distance:.04">
+					template: `<a-box width=0.02 height=0.02 depth=0.02 :color="hcolor" opacity=0.8  grabbable2="distance:.04" ss_grabbase>
 					<ImportObj :kind="kind" :pscale="scale" :pcolor="color" :psrc="src" ></ImportObj>
 					</a-box>`
 				})
@@ -83,6 +83,16 @@ const app= Vue.createApp({
 
 }//onload
 
+
+AFRAME.registerComponent('ss_grabbase', {
+	init:function() {
+		this.el.addEventListener("grab",ev=>{
+			console.log("grabbed!")
+			console.log(ev.detail) 
+		})	
+		
+	}	
+})
 // set VR mode height
 AFRAME.registerComponent('vrheight', {
 	schema:{
