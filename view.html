@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>WebXR Browser UI test</title>
+<script src="/wxr/af/aframe/dist/aframe-master.min.js"></script>
+<script src="/wxr/assets/js/grab2.js?2"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script type=module>
+const $ = (o)=>document.querySelector(o)
+const DEBUG = true 
+
+window.API = {} 
+
+onload = function() {
+const baseobj = $('#base')
+
+window.API.call = async function(method,param) {
+ 	let ret = null 
+	 console.log(method)
+	switch(method) {
+		case "bgtype":
+			app.bg_kind = param.id
+			break
+		case "bgmix":
+			app.bg_mix = param.value/100
+			break
+		case "addobj":
+			ret = await app.addobj(param) 
+			break 
+		case "delobj":
+			$('#base').removeChild(param.el) 
+			break ;
+	}
+	return ret 
+}	
+
+// my app
+const app= Vue.createApp({
+	created() {
+	},
+	data() {
+		return {
+			bg_kind:"passthru",
+			bg_mix:1,
+			posx:-0.3
+		}
+	},
+	methods:{
+		async addobj(param) {
+			console.log(param)
+				const ImportObj = (await import(param.path+(DEBUG?("?"+new Date().getTime()):""))).default
+	//			console.log(ImportObj)
+				const scale = param.param.size?param.param.size/100:1
+				const app2 = Vue.createApp({
+					data() {
+						return {
+							scale:scale,
+							kind:param.param.kind,
+							color:param.param.color,
+							src:param.param.src,
+							hcolor:"#ccc"
+						}
+					},
+					components: { ImportObj },
+					template: `<a-box width=0.02 height=0.02 depth=0.02 :color="hcolor" opacity=0.8  grabbable2="distance:.04">
+					<ImportObj :kind="kind" :pscale="scale" :pcolor="color" :psrc="src" ></ImportObj>
+					</a-box>`
+				})
+				const el = document.createElement("a-entity")
+//				el.setAttribute( "grabbable2","distance:.1")
+				el.setAttribute("position",`${this.posx} 0 0`)
+				this.posx += 0.1 
+				if(this.posx > 0.3) this.posx -= 0.58
+
+				const appinst = app2.mount(el)
+				$('#base').appendChild(el) 
+				return {kind:param.id,app:appinst,el:el,time:new Date().getTime()}
+			}
+	}
+}).mount('#reactive') 
+
+
+}//onload
+
+// set VR mode height
+AFRAME.registerComponent('vrheight', {
+	schema:{
+		height:{type:"number",default:1.5}
+	},
+	init:function() {
+		const scene = this.el.sceneEl
+		const camrig = this.el 
+		let objpos,campos
+		if(!camrig) return 
+		scene.addEventListener("enter-vr", ev=>{
+			campos = camrig.getAttribute("position").clone()
+			objpos = $('#base').getAttribute("position").clone()
+			camrig.setAttribute("position", {x:campos.x,y:0,z:campos.z})
+		})
+		scene.addEventListener("exit-vr", ev=>{
+			camrig.setAttribute("position",campos)
+			$('#base').setAttribute("position", objpos)	
+		})
+	}
+})
+// hide when AR mode 
+AFRAME.registerComponent('noar',{
+	init:function() {
+		const sc = this.el.sceneEl
+		sc.addEventListener("enter-vr", ev=>{
+			if(sc.states=="vr-mode") return
+			this.el.setAttribute("visible",false )
+		})
+		sc.addEventListener("exit-vr", ev=>{
+			this.el.setAttribute("visible",true )
+		})
+	}
+})
+</script>
+<style>
+html,body {
+	width:100% ;
+	height:100% ;
+	margin:0 ;
+}
+
+</style>
+</head>
+<body>
+<a-scene  xr-mode-ui="XRMode:ar" >
+	<a-assets>
+			<img id="floortex" src="/wxr/assets/img/tex1024.png">
+			<img id="photo360" src="/wxr/assets/img/IMG_20200104_162551_tamako.jpg">
+	</a-assets>
+<a-entity id=reactive>
+<!--reactive objects-->
+<a-entity id=base  position="0 1 -0.3"  scale="1 1 1" rotation="0 0 0">
+
+</a-entity>
+
+<a-entity id=background>
+	<a-entity v-if="bg_kind=='space'" id=bg_space >
+		<!--floor-->
+		<a-plane  position="0 -0.001 0" rotation="-90 0 0" width="200" height="200" color="#444" :material="`shader:flat;repeat:20 20;src:#floortex;transparent:true;opacity:${bg_mix}`"></a-plane>
+		<!--sky-->
+		<a-sky  :material="`shader:flat;color:#446;transparent:true;opacity:${bg_mix}`" radius="100" segments-height="6" segments-width="12"></a-sky>
+	</a-entity>
+	<a-entity id=bg_photo v-if="bg_kind=='p360'" >
+		<a-sky :material="`shader:flat;transparent:true;opacity:${bg_mix};src:#photo360`" radius="100" segments-height="6" segments-width="12" rotation="0 90 0"></a-sky>
+	</a-entity>	
+</a-entity>
+
+	<!--lights-->
+<a-entity id=light>
+	<a-entity light="type: ambient; color: #888"></a-entity>
+	<a-entity light="type: directional; color: #FFF; intensity: 0.6; castShadow:false;" position="-0.5 1 1"></a-entity>
+</a-entity>
+</a-entity>
+
+	<!--camera-->
+	<a-entity id="camrig"  position="0 1 0" vrheight > 
+		<a-entity id="camera" camera  look-controls wasd-controls></a-entity>
+		<!--vr controller-->
+		<a-entity oculus-touch-controls="hand: left; model:false"  grab2 ></a-entity>
+		<a-entity oculus-touch-controls="hand: right; model:true"  grab2 ></a-entity>
+		<a-entity id=hand_l hand-tracking-controls="hand: left" grab2="realhand:true"></a-entity>
+		<a-entity id=hand_r hand-tracking-controls="hand: right" grab2="realhand:true"></a-entity>
+	</a-entity>
+</a-scene>
+
+</body>
+</html>
