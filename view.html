@@ -73,13 +73,15 @@ const app= Vue.createApp({
 				</a-box>`
 			})
 			const el = document.createElement("a-entity")
-			el.setAttribute("position",`${this.posx} 0 0`)
+			let posy = document.querySelector("[camera]").object3D.position.y	
+			if(posy==0) posy=1
+			el.setAttribute("position",`${this.posx} ${posy} 0`)
 			this.posx += 0.1 
 			if(this.posx > 0.3) this.posx -= 0.58
 
 			const appinst = app2.mount(el)
 			$('#base').appendChild(el) 
-			return {id:param.id,name:param.name,app:appinst,el:el,time:new Date().getTime()}
+			return {id:param.id,app:appinst,el:el,time:new Date().getTime()}
 		}
 	}
 })
@@ -118,18 +120,15 @@ AFRAME.registerComponent('vrheight', {
 	init:function() {
 		const scene = this.el.sceneEl
 		const camrig = this.el 
-		let objpos,campos
+		let objpos,camrigpos
 		if(!camrig) return 
 		scene.addEventListener("enter-vr", ev=>{
-			campos = camrig.getAttribute("position").clone()
+			camrigpos = camrig.getAttribute("position").clone()
 			objpos = $('#base').getAttribute("position").clone()
-			camrig.setAttribute("position", {x:campos.x,y:0,z:campos.z})
-			document.body.style.height = "0%"
+			camrig.setAttribute("position", {x:camrigpos.x,y:0,z:camrigpos.z})
 		})
 		scene.addEventListener("exit-vr", ev=>{
-			camrig.setAttribute("position",campos)
-			$('#base').setAttribute("position", objpos)	
-			document.body.style.height = "100%"
+			camrig.setAttribute("position",camrigpos)
 		})
 	}
 })
@@ -176,7 +175,7 @@ html,body {
 	<div id=stat>stat {{stat_calls}}calls {{stat_poly}}△	</div>
 	
 	<!--app base -->
-	<a-entity id=base  position="0 1 -0.3"  scale="1 1 1" rotation="0 0 0">
+	<a-entity id=base  position="0 0 -0.3"  scale="1 1 1" rotation="0 0 0">
 	</a-entity>
 	<!-- background -->
 	<a-entity id=background>

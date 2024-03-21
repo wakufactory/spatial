@@ -84,7 +84,7 @@ export default {
 						ppos:"0 0 0"
 					}
 				},
-				{name:"3D app sample 1",id:"obj_sample2",
+				{name:"3D app sample 1",id:"obj_sample1",
 					path:"./apps/instobj1.js",
 					param:{
 
