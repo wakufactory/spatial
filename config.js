@@ -73,7 +73,7 @@ export default {
 				{name:"2D video sample",id:"video2D_sample",
 					path:"./apps/video2D.js",
 					param:{
-						psrc:"./assets/syaso_sk1.mp4"
+						psrc:"https://wakufactory.jp/wxr/assets/mov/syaso_sk1.mp4"
 					}
 				},
 				{name:"3D Model sample 1",id:"model_sample1",
