@@ -9,7 +9,7 @@ export default {
 	},
 	template: `
 		<a-entity :scale="pscale+' '+pscale+' '+pscale" >
-		<a-plane width=0.2 height=.2  position="0 0.2 0"  material="shader:flat" :ss_imgload="psrc"></a-plane>
+		<a-entity layer="type:quad;width:.2;height:.2"  position="0 0.2 0"  :ss_imgload="psrc"></a-entity>
 		</a-entity>
 `
 }
@@ -40,10 +40,10 @@ AFRAME.registerComponent('ss_imgload', {
 						const as=(im1.height/im1.width)
 						const bsize = 0.5 
 						const h=as>1?1:as*bsize
-						this.el.setAttribute("width",(as>1?1/as:1)*bsize)
-						this.el.setAttribute("height",h)
+						this.el.setAttribute("layer","width",(as>1?1/as:1)*bsize)
+						this.el.setAttribute("layer","height",h)
 						this.el.setAttribute("position",{x:0,y:h/2,z:0})
-						this.el.setAttribute("material","src","#"+id)
+						this.el.setAttribute("layer","src","#"+id)
 						resolve(im1)
 					}
 					im1.src = src

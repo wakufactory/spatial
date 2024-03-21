@@ -1,20 +1,22 @@
 /*
 	SPATIAL SHELL APP
-	2D image viewer 
+	360deg image viewer 
 */
 export default {
 	props:{
 		psrc:String,
 		pscale:Number,
+		bg_mix:Number
 	},
 	template: `
-		<a-entity :scale="pscale+' '+pscale+' '+pscale" >
-		<a-plane width=0.2 height=.2  position="0 0.2 0"  material="shader:flat" :ss_imgload="psrc"></a-plane>
+		<a-entity >
+		<a-sky :material="'shader:flat;transparent:true;opacity:1;src:;repeat:1 1'" radius="100" segments-height="20" segments-width="40" rotation="0 -90 0"
+			:ss_imgload360="psrc"></a-sky>
 		</a-entity>
 `
 }
-if(AFRAME.components['ss_imgload']) delete AFRAME.components['ss_imgload']
-AFRAME.registerComponent('ss_imgload', {
+if(AFRAME.components['ss_imgload360']) delete AFRAME.components['ss_imgload360']
+AFRAME.registerComponent('ss_imgload360', {
 	schema:{
 		type:"string"
 	},
@@ -37,12 +39,6 @@ AFRAME.registerComponent('ss_imgload', {
 					im1.id = id
 					im1.setAttribute("crossorigin","anonymous")
 					im1.onload = ()=>{
-						const as=(im1.height/im1.width)
-						const bsize = 0.5 
-						const h=as>1?1:as*bsize
-						this.el.setAttribute("width",(as>1?1/as:1)*bsize)
-						this.el.setAttribute("height",h)
-						this.el.setAttribute("position",{x:0,y:h/2,z:0})
 						this.el.setAttribute("material","src","#"+id)
 						resolve(im1)
 					}
