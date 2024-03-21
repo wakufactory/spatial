@@ -67,13 +67,13 @@ export default {
 				{name:"2D image sample",id:"image2D_sample",
 					path:"./apps/image2D.js",
 					param:{
-						psrc:"/wxr/assets/img/chihiro015.jpg"
+						psrc:"./assets/chihiro015.jpg"
 					}
 				},
 				{name:"2D video sample",id:"video2D_sample",
 					path:"./apps/video2D.js",
 					param:{
-						psrc:"/wxr/assets/mov/syaso_sk1.mp4"
+						psrc:"./assets/syaso_sk1.mp4"
 					}
 				},
 				{name:"3D Model sample 1",id:"model_sample1",
